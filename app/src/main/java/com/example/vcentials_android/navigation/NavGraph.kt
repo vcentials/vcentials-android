@@ -1,29 +1,18 @@
 package com.example.vcentials_android
 
-import AddTempScreen
 import HomeScreen
 import LoginScreen
 import MenuScreen
 import SignupScreen
 import StartupScreen
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import AddTempScreen
 import androidx.compose.runtime.Composable
-import androidx.navigation.compose.*
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppNavigation()
-        }
-    }
-}
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 
 @Composable
-fun AppNavigation() {
-    val navController = rememberNavController()
+fun NavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "startup") {
         composable("startup") { StartupScreen(navController) }
         composable("login") { LoginScreen(navController) }
@@ -33,3 +22,5 @@ fun AppNavigation() {
         composable("menu") { MenuScreen(navController) }
     }
 }
+
+
