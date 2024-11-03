@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "259224233021",
+    "project_id": "vcentials-4a961",
+    "storage_bucket": "vcentials-4a961.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:259224233021:android:992c54cef06f08aa183654",
+        "android_client_info": {
+          "package_name": "com.example.vcentials_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDr2iT_dVpfwmmhJM7HoKMvl6v_BWvtCrU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:259224233021:android:399d5b57eb62b38c183654",
+        "android_client_info": {
+          "package_name": "com.vcentials.vcentials"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDr2iT_dVpfwmmhJM7HoKMvl6v_BWvtCrU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
