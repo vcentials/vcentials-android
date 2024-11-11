@@ -10,13 +10,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
 import androidx.navigation.NavHostController
 import com.example.vcentials_android.ui.theme.TextGrey
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavHostController) {
-    val focusManager = LocalFocusManager.current
+    val auth = FirebaseAuth.getInstance()
 
     // Remembering the state of the email and password text fields
     var email by remember { mutableStateOf("") }
