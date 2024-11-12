@@ -1,7 +1,7 @@
 For running this application I completed the following steps:
 
 Install gradle-8.10.2
-Install jdk-17
+Install jdk-17	** It must be 17, not any newer or older ** 
 Install Android Studio Ladybug -
 	Ensure the Gradle and Kotlin plugins are installed, by going to Settings < Plugins < Installed
 		If not installed, find them on the Marketplace. 
