@@ -9,20 +9,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import com.example.vcentials_android.navigation.UserSession
 
 @Composable
 fun AddTempScreen(navController: NavHostController) {
     val db = FirebaseFirestore.getInstance()
 
+    // Get current date and time
+    val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+
     // State to remember all input fields
-    var date by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var machine by remember { mutableStateOf("") }
     var machineTemp by remember { mutableStateOf("") }
     var room by remember { mutableStateOf("") }
     var roomTemp by remember { mutableStateOf("") }
-    var time by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf(UserSession.userName ?: "") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
@@ -43,14 +49,6 @@ fun AddTempScreen(navController: NavHostController) {
         )
 
         // Input fields
-        TextField(
-            value = date,
-            onValueChange = { date = it },
-            placeholder = { Text("Date (e.g. 2024-09-17)") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        )
         TextField(
             value = location,
             onValueChange = { location = it },
@@ -91,22 +89,6 @@ fun AddTempScreen(navController: NavHostController) {
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         )
-        TextField(
-            value = time,
-            onValueChange = { time = it },
-            placeholder = { Text("Time (e.g. 11:52)") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        )
-        TextField(
-            value = username,
-            onValueChange = { username = it },
-            placeholder = { Text("Username") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        )
 
         // Error Message
         errorMessage?.let {
@@ -120,17 +102,17 @@ fun AddTempScreen(navController: NavHostController) {
         // Submit Button
         Button(
             onClick = {
-                if (date.isNotEmpty() && location.isNotEmpty() && machine.isNotEmpty() && machineTemp.isNotEmpty() &&
-                    room.isNotEmpty() && roomTemp.isNotEmpty() && time.isNotEmpty() && username.isNotEmpty()) {
+                if (location.isNotEmpty() && machine.isNotEmpty() && machineTemp.isNotEmpty() &&
+                    room.isNotEmpty() && roomTemp.isNotEmpty() && username.isNotEmpty()) {
                     // Adding temperature data to Firestore
                     val temperatureData = hashMapOf(
-                        "date" to date,
+                        "date" to currentDate,
                         "location" to location,
                         "machine" to machine,
                         "machineTemp" to machineTemp,
                         "room" to room,
                         "roomTemp" to roomTemp,
-                        "time" to time,
+                        "time" to currentTime,
                         "username" to username
                     )
                     db.collection("temperatures")

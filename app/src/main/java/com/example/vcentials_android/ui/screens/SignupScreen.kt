@@ -11,20 +11,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.google.firebase.auth.FirebaseAuth
+import com.example.vcentials_android.navigation.UserSession
+import com.google.firebase.firestore.FirebaseFirestore
+import com.example.vcentials_android.ui.theme.*
 
 @Composable
 fun SignupScreen(navController: NavHostController) {
-    val auth = FirebaseAuth.getInstance()
+    val db = FirebaseFirestore.getInstance()
 
-    // Remember the states for the input fields
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var repeatPassword by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    Surface(color = Color(0xFFB71C1C), modifier = Modifier.fillMaxSize()) {
+    Surface(color = ValenciaRed, modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,8 +50,17 @@ fun SignupScreen(navController: NavHostController) {
                 placeholder = { Text("Email") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = 8.dp),
+                isError = errorMessage == "Email already exists"
             )
+            errorMessage?.takeIf { it == "Email already exists" }?.let {
+                Text(
+                    text = it,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
 
             // Password TextField
             TextField(
@@ -74,8 +84,8 @@ fun SignupScreen(navController: NavHostController) {
                 singleLine = true
             )
 
-            // Error Message
-            errorMessage?.let {
+            // Error Message for passwords
+            errorMessage?.takeIf { it != "Email already exists" }?.let {
                 Text(
                     text = it,
                     color = Color.White,
@@ -87,15 +97,34 @@ fun SignupScreen(navController: NavHostController) {
             Button(
                 onClick = {
                     if (email.isNotEmpty() && password.isNotEmpty() && password == repeatPassword) {
-                        auth.createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    // Navigate to home screen on successful signup
-                                    navController.navigate("home")
+                        db.collection("users")
+                            .whereEqualTo("email", email)
+                            .get()
+                            .addOnSuccessListener { result ->
+                                if (result.isEmpty) {
+                                    val newUser = hashMapOf(
+                                        "name" to name,
+                                        "email" to email,
+                                        "password" to password
+                                    )
+
+                                    db.collection("users")
+                                        .add(newUser)
+                                        .addOnSuccessListener { documentReference ->
+                                            val userId = documentReference.id
+                                            UserSession.userId = userId  // Set global userId
+                                            UserSession.userName = name // Set global userName
+                                            navController.navigate("home")
+                                        }
+                                        .addOnFailureListener {
+                                            errorMessage = "Signup failed: ${it.message}"
+                                        }
                                 } else {
-                                    // Set error message to display
-                                    errorMessage = task.exception?.message ?: "Signup failed"
+                                    errorMessage = "Email already exists"
                                 }
+                            }
+                            .addOnFailureListener {
+                                errorMessage = "Signup failed: ${it.message}"
                             }
                     } else {
                         errorMessage = if (email.isEmpty() || password.isEmpty()) {
