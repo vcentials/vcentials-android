@@ -8,11 +8,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.vcentials_android.ui.theme.ValenciaRed
 
 @Composable
 fun StartupScreen(navController: NavHostController) {
     Surface(
-        color = Color(0xFFB71C1C), // Setting the background to match the provided red color
+        color = ValenciaRed, // Setting the background to match the provided red color
         modifier = Modifier.fillMaxSize()
     ) {
         Column(
