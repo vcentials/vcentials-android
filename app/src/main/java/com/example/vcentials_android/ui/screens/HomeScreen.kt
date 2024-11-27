@@ -23,6 +23,7 @@ import com.example.vcentials_android.navigation.UserSession
 import com.example.vcentials_android.ui.theme.ValenciaRed
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -34,11 +35,13 @@ fun HomeScreen(navController: NavHostController) {
     LaunchedEffect(Unit) {
 
             db.collection("temperatures")
+                .orderBy("date", Query.Direction.DESCENDING) // Sort in descending order
+                .limit(3) // most recent 3 entries
                 .get()
                 .addOnSuccessListener { result ->
                     temperatureList = result.documents.mapNotNull { it.data }
                 }
-                .addOnFailureListener {
+                .addOnFailureListener { exception ->
                     // Handle error
                 }
     }
