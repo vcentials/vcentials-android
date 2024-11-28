@@ -14,6 +14,7 @@ import com.example.vcentials_android.navigation.UserSession
 import com.example.vcentials_android.ui.theme.TextGrey
 import com.example.vcentials_android.ui.theme.ValenciaRed
 import com.google.firebase.firestore.getField
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
@@ -66,7 +67,8 @@ fun LoginScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
                 singleLine = true,
-                isError = passwordError != null
+                isError = passwordError != null,
+                visualTransformation = PasswordVisualTransformation() // Hides the password input
             )
             passwordError?.let {
                 Text(

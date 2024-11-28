@@ -30,7 +30,6 @@ fun HomeScreen(navController: NavHostController) {
     val db = FirebaseFirestore.getInstance()
     var temperatureList by remember { mutableStateOf(listOf<Map<String, Any>>()) }
 
-
     // Retrieve the temperature data from Firestore
     LaunchedEffect(Unit) {
 

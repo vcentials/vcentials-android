@@ -1,4 +1,6 @@
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,16 +39,34 @@ fun AddTempScreen(navController: NavHostController) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header
-        Text(
-            text = "Add Temperature Record",
-            style = MaterialTheme.typography.headlineMedium.copy(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            ),
+        // top row with "X" button
+        Row(
             modifier = Modifier
-                .padding(bottom = 24.dp)
-        )
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Header
+            Text(
+                text = "Add Temperature Record",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+            )
+
+            IconButton(
+                onClick = { navController.navigate("home") },
+                modifier = Modifier.size(24.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close",
+                    tint = Color.Black
+                )
+            }
+        }
 
         // Input fields
         TextField(
@@ -103,7 +123,8 @@ fun AddTempScreen(navController: NavHostController) {
         Button(
             onClick = {
                 if (location.isNotEmpty() && machine.isNotEmpty() && machineTemp.isNotEmpty() &&
-                    room.isNotEmpty() && roomTemp.isNotEmpty() && username.isNotEmpty()) {
+                    room.isNotEmpty() && roomTemp.isNotEmpty() && username.isNotEmpty()
+                ) {
                     // Adding temperature data to Firestore
                     val temperatureData = hashMapOf(
                         "date" to currentDate,
