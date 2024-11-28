@@ -29,20 +29,28 @@ import com.google.firebase.firestore.Query
 fun HomeScreen(navController: NavHostController) {
     val db = FirebaseFirestore.getInstance()
     var temperatureList by remember { mutableStateOf(listOf<Map<String, Any>>()) }
+    var isLoading by remember { mutableStateOf(false) }
 
-    // Retrieve the temperature data from Firestore
+    // Function to fetch data from Firestore
+    fun fetchTemperatureData() {
+        isLoading = true
+        db.collection("temperatures")
+            .orderBy("date", Query.Direction.DESCENDING) // Sort in descending order
+            .limit(3) // most recent 3 entries
+            .get()
+            .addOnSuccessListener { result ->
+                temperatureList = result.documents.mapNotNull { it.data }
+                isLoading = false
+            }
+            .addOnFailureListener { exception ->
+                // Handle error
+                isLoading = false
+            }
+    }
+
+    // Fetch the temperature data initially
     LaunchedEffect(Unit) {
-
-            db.collection("temperatures")
-                .orderBy("date", Query.Direction.DESCENDING) // Sort in descending order
-                .limit(3) // most recent 3 entries
-                .get()
-                .addOnSuccessListener { result ->
-                    temperatureList = result.documents.mapNotNull { it.data }
-                }
-                .addOnFailureListener { exception ->
-                    // Handle error
-                }
+        fetchTemperatureData()
     }
 
     Scaffold(
@@ -91,68 +99,85 @@ fun HomeScreen(navController: NavHostController) {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
+            Button(
+                onClick = { fetchTemperatureData() },
+                modifier = Modifier.padding(bottom = 16.dp),
+                enabled = !isLoading,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(text = "Refresh Records")
+            }
+
             // Display temperature list from Firestore
-            temperatureList.forEach { data ->
-                val date = data["date"]?.toString() ?: ""
-                val time = data["time"]?.toString() ?: ""
-                val location = data["location"]?.toString() ?: ""
-                val machine = data["machine"]?.toString() ?: ""
-                val machineTemp = data["machineTemp"]?.toString() ?: ""
-                val room = data["room"]?.toString() ?: ""
-                val roomTemp = data["roomTemp"]?.toString() ?: ""
-                val username = data["username"]?.toString() ?: ""
+            if (isLoading) {
+                // Show a loading indicator while fetching data
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            } else {
+                temperatureList.forEach { data ->
+                    val date = data["date"]?.toString() ?: ""
+                    val time = data["time"]?.toString() ?: ""
+                    val location = data["location"]?.toString() ?: ""
+                    val machine = data["machine"]?.toString() ?: ""
+                    val machineTemp = data["machineTemp"]?.toString() ?: ""
+                    val room = data["room"]?.toString() ?: ""
+                    val roomTemp = data["roomTemp"]?.toString() ?: ""
+                    val username = data["username"]?.toString() ?: ""
 
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    // Time and Date at the top right
-                    Text(
-                        text = "$time, $date",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Black,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
-                    )
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        // Time and Date at the top right
+                        Text(
+                            text = "$time, $date",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Black,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+                        )
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(8.dp))
-                            .padding(16.dp)
-                            .padding(bottom = 16.dp)
-                    ) {
-                        Column {
-                            Text(
-                                text = "Location: $location",
-                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            Text(
-                                text = "Machine: $machine",
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = "Machine Temperature: $machineTemp",
-                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            Text(
-                                text = "Room: $room",
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = "Room Temperature: $roomTemp",
-                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            Text(
-                                text = "Username: $username",
-                                style = MaterialTheme.typography.bodyLarge,
-                            )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(8.dp))
+                                .padding(16.dp)
+                                .padding(bottom = 16.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    text = "Location: $location",
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                Text(
+                                    text = "Machine: $machine",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
+                                    text = "Machine Temperature: $machineTemp",
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                Text(
+                                    text = "Room: $room",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
+                                    text = "Room Temperature: $roomTemp",
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                Text(
+                                    text = "Username: $username",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                            }
                         }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
